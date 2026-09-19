@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Departments{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow neutral">Departments</p>
+            <h2>Organization structure</h2>
+        </div>
+    </div>
+
+    {% if user.is_staff %}
+    <form method="post" class="add-form">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-box {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="two-col">
+            <div class="field-group">
+                <label for="department-name">Department name</label>
+                <input type="text" id="department-name" name="name" placeholder="Example: Human Resources" required>
+            </div>
+            <div class="field-group">
+                <label for="department-desc">Description</label>
+                <input type="text" id="department-desc" name="description" placeholder="Optional description">
+            </div>
+        </div>
+        <button type="submit" class="primary-btn small-btn">Add department</button>
+    </form>
+    {% endif %}
+
+    <div class="card-grid three-col">
+        {% for department in departments %}
+        <article class="info-card">
+            <div class="card-icon">{{ department.name|slice:':1'|upper }}</div>
+            <h3>{{ department.name }}</h3>
+            <p>{{ department.description|default:'No description provided yet.' }}</p>
+            <div class="meta-row">
+                <span>{{ department.employees.count }} Employees</span>
+                <span>{{ department.services.count }} Services</span>
+            </div>
+            {% if user.is_staff %}
+            <a href="{% url 'edit_department' department.id %}" class="text-action">Edit department</a>
+            <form method="post" action="{% url 'delete_department' department.id %}" class="inline-delete-form">
+                {% csrf_token %}
+                <button type="submit" class="danger-btn" onclick="return confirm('Delete this department?')">Delete</button>
+            </form>
+            {% endif %}
+        </article>
+        {% empty %}
+        <div class="empty-state">No departments are available yet.</div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

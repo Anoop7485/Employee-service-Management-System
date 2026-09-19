@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Services{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow neutral">Services</p>
+        </div>
+    </div>
+
+    {% if user.is_staff %}
+    <form method="post" class="add-form">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-box {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="two-col">
+            <div class="field-group">
+                <label for="service-name">Service name</label>
+                <input type="text" id="service-name" name="name" placeholder="Example: Printer Support" required>
+            </div>
+            <div class="field-group">
+                <label for="service-department">Department</label>
+                <select id="service-department" name="department" required>
+                    <option value="">Select a department</option>
+                    {% for department in departments %}
+                        <option value="{{ department.id }}">{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label for="service-desc">Description</label>
+            <textarea id="service-desc" name="description" rows="4" placeholder="Describe this service..."></textarea>
+        </div>
+
+        <button type="submit" class="primary-btn small-btn">Add service</button>
+    </form>
+    {% endif %}
+
+    <div class="card-grid three-col">
+        {% for service in services %}
+        <article class="info-card">
+            <div class="service-badge">{{ service.department.name }}</div>
+            <h3>{{ service.name }}</h3>
+            <p>{{ service.description|default:'Service description coming soon.' }}</p>
+            <div class="meta-row">
+                <span>{% if service.is_active %}Active{% else %}Inactive{% endif %}</span>
+                <span>{{ service.requests.count }} Requests</span>
+            </div>
+            {% if user.is_staff %}
+            <a href="{% url 'edit_service' service.id %}" class="text-action">Edit service</a>
+            <form method="post" action="{% url 'delete_service' service.id %}" class="inline-delete-form">
+                {% csrf_token %}
+                <button type="submit" class="danger-btn" onclick="return confirm('Delete this service?')">Delete</button>
+            </form>
+            {% endif %}
+        </article>
+        {% empty %}
+        <div class="empty-state">No services are available yet.</div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

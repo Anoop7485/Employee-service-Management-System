@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Employees{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow neutral">Admin</p>
+            <h2>Employee directory</h2>
+        </div>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-head">
+            <h3>All employees</h3>
+        </div>
+        <ul class="request-list">
+            {% for employee in employees %}
+            <li>
+                <div>
+                    <strong>{{ employee.name }}</strong>
+                    <small>{{ employee.designation }} • {{ employee.department.name }}</small>
+                </div>
+                <div class="employee-actions">
+                    <span class="tag low">{{ employee.emp_id }}</span>
+                    <a href="{% url 'edit_employee' employee.id %}" class="text-action">Edit</a>
+                </div>
+            </li>
+            {% empty %}
+            <li><span class="empty-state">No employees found.</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if is_staff_view %}My Team{% else %}My Details{% endif %}{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow neutral">{% if is_staff_view %}Team{% else %}Profile{% endif %}</p>
+            <h2>{% if is_staff_view %}My team directory{% else %}Your details and requests{% endif %}</h2>
+        </div>
+    </div>
+
+    {% if is_staff_view %}
+    <div class="card-grid three-col">
+        {% for employee in employees %}
+        <article class="info-card team-card">
+            <div class="card-icon">{{ employee.name|slice:':1'|upper }}</div>
+            <h3>{{ employee.name }}</h3>
+            <p><strong>{{ employee.designation }}</strong></p>
+            <p>{{ employee.department.name }}</p>
+            <div class="meta-row">
+                <span>{{ employee.email }}</span>
+                <span>{{ employee.phone }}</span>
+            </div>
+        </article>
+        {% empty %}
+        <div class="empty-state">No team members are available.</div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card-grid two-col">
+        {% if employee %}
+        <article class="info-card team-card">
+            <div class="card-icon">{{ employee.name|slice:':1'|upper }}</div>
+            <h3>{{ employee.name }}</h3>
+            <p><strong>{{ employee.designation }}</strong></p>
+            <p>{{ employee.department.name }}</p>
+            <div class="meta-row">
+                <span>{{ employee.email }}</span>
+                <span>{{ employee.phone }}</span>
+            </div>
+        </article>
+        {% else %}
+        <article class="info-card team-card">
+            <div class="card-icon">U</div>
+            <h3>Profile not linked</h3>
+            <p>Your employee profile is not available yet.</p>
+        </article>
+        {% endif %}
+
+        <div class="panel-card">
+            <div class="panel-head">
+                <h3>My Requests</h3>
+                <a href="{% url 'service_requests' %}">View all</a>
+            </div>
+            <ul class="request-list">
+                {% if requests %}
+                    {% for request in requests %}
+                    <li>
+                        <div>
+                            <strong>{{ request.title }}</strong>
+                            <small>{{ request.ticket_number }} • {{ request.service.name }}</small>
+                        </div>
+                        <span class="tag {% if request.status == 'OPEN' %}low{% elif request.status == 'RESOLVED' %}low{% elif request.status == 'INPROGRESS' %}medium{% else %}high{% endif %}">{{ request.status }}</span>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li><div><strong>No requests yet</strong><small>Submit a new request to get started.</small></div></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

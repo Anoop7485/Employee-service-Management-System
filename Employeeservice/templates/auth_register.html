@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<section class="auth-panel register-panel">
+    <div class="auth-visual">
+        <div class="badge">Join today</div>
+        <h2>Create your employee profile</h2>
+        <p>Set up your workspace and get started with service requests, approvals, and internal support in minutes.</p>
+        <ul>
+            <li>Secure employee account</li>
+            <li>Department-based access</li>
+            <li>Built for service operations</li>
+        </ul>
+    </div>
+
+    <div class="auth-card">
+        <h3>Create account</h3>
+        <p class="muted">Create your employee account below</p>
+
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="error-box">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+
+            <div class="two-col">
+                <div class="field-group">
+                    <label for="id_username">Username</label>
+                    {{ form.username }}
+                </div>
+                <div class="field-group">
+                    <label for="id_email">Email</label>
+                    {{ form.email }}
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="field-group">
+                    <label for="id_name">Full Name</label>
+                    {{ form.name }}
+                </div>
+                <div class="field-group">
+                    <label for="id_emp_id">Employee ID</label>
+                    {{ form.emp_id }}
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="field-group">
+                    <label for="id_phone">Phone</label>
+                    {{ form.phone }}
+                </div>
+                <div class="field-group">
+                    <label for="id_designation">Designation</label>
+                    {{ form.designation }}
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="id_department">Department</label>
+                {{ form.department }}
+            </div>
+
+            <div class="two-col">
+                <div class="field-group">
+                    <label for="id_password1">Password</label>
+                    {{ form.password1 }}
+                </div>
+                <div class="field-group">
+                    <label for="id_password2">Confirm Password</label>
+                    {{ form.password2 }}
+                </div>
+            </div>
+
+            <button type="submit" class="primary-btn">Register</button>
+        </form>
+
+        <p class="switch-text">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        <p class="switch-text admin-switch"><a href="{% url 'admin_login' %}">Admin login</a></p>
+    </div>
+</section>
+{% endblock %}

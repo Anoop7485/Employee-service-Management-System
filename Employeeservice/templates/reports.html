@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow neutral">Reports</p>
+            <h2>Service health overview</h2>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Total Requests</span>
+            <strong>{{ total }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Open</span>
+            <strong>{{ open_count }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Assigned</span>
+            <strong>{{ assigned_count }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Resolved</span>
+            <strong>{{ resolved_count }}</strong>
+        </div>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-head">
+            <h3>Department status overview</h3>
+        </div>
+        <div class="department-status-grid">
+            {% for dept in department_status_summary %}
+            <div class="department-status-card">
+                <h4>{{ dept.name }}</h4>
+                <div class="mini-stats">
+                    <span>Open: {{ dept.open }}</span>
+                    <span>Assigned: {{ dept.assigned }}</span>
+                    <span>Resolved: {{ dept.resolved }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">No department records yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-head">
+            <h3>Recent activity</h3>
+        </div>
+        <ul class="request-list">
+            {% for item in requests %}
+            <li>
+                <div>
+                    <strong>{{ item.ticket_number }}</strong>
+                    <small>{{ item.title }}</small>
+                    <small>Employee: {{ item.employee.name }}</small>
+                    <small>Employee department: {{ item.employee.department.name }}</small>
+                    <small>Handled by: Admin / Staff</small>
+                </div>
+                <div class="status-edit-box">
+                    <form method="post" action="{% url 'update_service_request_status' item.id %}">
+                        {% csrf_token %}
+                        <select name="status" class="compact-select">
+                            {% for status_value, status_label in item.STATUS_CHOICES %}
+                                <option value="{{ status_value }}" {% if item.status == status_value %}selected{% endif %}>{{ status_label|title }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="small-btn">Update</button>
+                    </form>
+                </div>
+            </li>
+            {% empty %}
+            <li><span class="empty-state">No records yet.</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-head">
+            <h3>All employee requests</h3>
+        </div>
+        <div class="all-requests-table-wrap">
+            <table class="all-requests-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Ticket</th>
+                        <th>Employee Department</th>
+                        <th>Service</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in all_requests %}
+                    <tr>
+                        <td>{{ item.employee.name }}</td>
+                        <td>{{ item.ticket_number }}</td>
+                        <td>{{ item.employee.department.name }}</td>
+                        <td>{{ item.service.name }}</td>
+                        <td><span class="tag {% if item.status == 'OPEN' %}low{% elif item.status == 'RESOLVED' %}low{% elif item.status == 'ASSIGNED' %}medium{% else %}high{% endif %}">{{ item.status }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty-state-cell">No employee requests yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

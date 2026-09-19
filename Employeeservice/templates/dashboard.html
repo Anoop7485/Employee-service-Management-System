@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-shell">
+    <div class="dashboard-header">
+        <div>
+            <p class="eyebrow neutral">Overview</p>
+            <h2>Welcome back, {{ user.first_name|default:user.username }}</h2>
+        </div>
+        <div class="status-chip">Online</div>
+    </div>
+
+    {% if user.is_staff %}
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Open Requests</span>
+            <strong>{{ staff_open_count }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>In Progress</span>
+            <strong>{{ staff_in_progress_count }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Resolved</span>
+            <strong>{{ staff_resolved_count }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Total Requests</span>
+            <strong>{{ staff_total }}</strong>
+        </div>
+    </div>
+    {% else %}
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>My Requests</span>
+            <strong>{{ service_requests.count }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Open</span>
+            <strong>{{ open_count }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Solved</span>
+            <strong>{{ resolved_count }}</strong>
+        </div>
+        <div class="stat-card">
+            <span>Department</span>
+            <strong>{{ employee.department.name|default:'N/A' }}</strong>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="panel-grid">
+        <div class="panel-card">
+            <div class="panel-head">
+                <h3>{% if user.is_staff %}Recent Service Requests{% else %}My Requests{% endif %}</h3>
+                <a href="{% if user.is_staff %}{% url 'reports' %}{% else %}{% url 'service_requests' %}{% endif %}">View all</a>
+            </div>
+            <ul class="request-list">
+                {% if service_requests %}
+                    {% for request in service_requests %}
+                    <li>
+                        <div>
+                            <strong>{{ request.title }}</strong>
+                            <small>{{ request.ticket_number }} • {{ request.service.name }}</small>
+                            <small>Employee department: {{ request.employee.department.name }}</small>
+                            <small>Resolved by: Admin / Staff</small>
+                        </div>
+                        <span class="tag {% if request.status == 'OPEN' %}low{% elif request.status == 'RESOLVED' %}low{% elif request.status == 'INPROGRESS' %}medium{% else %}high{% endif %}">{{ request.get_status_display }}</span>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li><div><strong>No requests yet</strong><small>Submit a new request to get started.</small></div></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="panel-card">
+            <div class="panel-head">
+                <h3>Quick Actions</h3>
+            </div>
+            <div class="action-list">
+                <a href="{% url 'service_requests' %}" class="action-btn">New Request</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'team' %}" class="action-btn secondary">My Team</a>
+                    <a href="{% url 'reports' %}" class="action-btn secondary">Reports</a>
+                    <a href="{% url 'admin_employees' %}" class="action-btn secondary">Employees</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

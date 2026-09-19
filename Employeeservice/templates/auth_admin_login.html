@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Login{% endblock %}
+
+{% block content %}
+<section class="auth-panel">
+    <div class="auth-visual">
+        <div class="badge">Admin access</div>
+        <h2>Secure staff portal</h2>
+        <p>Only authorized administrators can access employee records and management tools.</p>
+        <ul>
+            <li>Staff-only dashboard</li>
+            <li>Employee overview</li>
+            <li>Operational reporting</li>
+        </ul>
+    </div>
+
+    <div class="auth-card">
+        <h3>Admin Sign in</h3>
+        <p class="muted">Enter your administrator credentials</p>
+
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="error-box">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="field-group">
+                <label for="id_username">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}<small>{{ form.username.errors }}</small>{% endif %}
+            </div>
+
+            <div class="field-group">
+                <label for="id_password">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}<small>{{ form.password.errors }}</small>{% endif %}
+            </div>
+
+            <button type="submit" class="primary-btn">Login as admin</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

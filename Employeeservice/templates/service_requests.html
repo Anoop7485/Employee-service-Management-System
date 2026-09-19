@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Service Requests{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow neutral">Service requests</p>
+            <h2>Track your requests</h2>
+        </div>
+    </div>
+
+    <div class="request-layout">
+        <form method="post" class="request-form">
+            {% csrf_token %}
+            <h3>Create request</h3>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message-box {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="field-group">
+                <label for="title">Request title</label>
+                <input type="text" id="title" name="title" placeholder="Example: VPN access issue" required>
+            </div>
+
+            <div class="field-group">
+                <label for="service">Service</label>
+                <select id="service" name="service" required>
+                    <option value="">Select a service</option>
+                    {% for service in services %}
+                        <option value="{{ service.id }}">{{ service.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority">
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM" selected>Medium</option>
+                    <option value="HIGH">High</option>
+                    <option value="URGENT">Urgent</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="5" placeholder="Describe the issue or request" required></textarea>
+            </div>
+
+            <button type="submit" class="primary-btn">Submit request</button>
+        </form>
+
+        <div class="request-list-panel">
+            <h3>Recent requests</h3>
+            {% for request in requests %}
+            <article class="mini-request">
+                <div class="mini-header">
+                    <strong>{{ request.ticket_number }}</strong>
+                    <span class="tag {{ request.priority|lower }}">{{ request.priority }}</span>
+                </div>
+                <h4>{{ request.title }}</h4>
+                <p>{{ request.description|truncatechars:110 }}</p>
+                <div class="meta-row">
+                    <span>{{ request.service.name }}</span>
+                    <span>{{ request.status }}</span>
+                </div>
+                <div class="meta-row">
+                    <span>Department: {{ request.service.department.name }}</span>
+                    <span>Handled by: Admin / Staff</span>
+                </div>
+            </article>
+            {% empty %}
+            <div class="empty-state">No requests yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

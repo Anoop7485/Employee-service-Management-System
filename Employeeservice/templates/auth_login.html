@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<section class="auth-panel">
+    <div class="auth-visual">
+        <div class="badge">Welcome back</div>
+        <h2>Access your service desk</h2>
+        <p>Track requests, manage tasks, and stay connected with your team in one seamless workspace.</p>
+        <ul>
+            <li>Smart request tracking</li>
+            <li>Department-based workflows</li>
+            <li>Faster issue resolution</li>
+        </ul>
+    </div>
+
+    <div class="auth-card">
+        <h3>Sign in</h3>
+        <p class="muted">Use your employee ID and password to continue</p>
+
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="error-box">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="field-group">
+                <label for="id_username">Employee ID / Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}<small>{{ form.username.errors }}</small>{% endif %}
+            </div>
+
+            <div class="field-group">
+                <label for="id_password">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}<small>{{ form.password.errors }}</small>{% endif %}
+            </div>
+
+            <button type="submit" class="primary-btn">Login</button>
+        </form>
+
+        <p class="switch-text"><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+        <p class="switch-text">Need an account? <a href="{% url 'register' %}">Register here</a></p>
+        <p class="switch-text admin-switch"><a href="{% url 'admin_login' %}">Admin login</a></p>
+    </div>
+</section>
+{% endblock %}
